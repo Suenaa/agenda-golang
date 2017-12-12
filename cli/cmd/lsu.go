@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/Suenaa/agenda-go/service"
+	"github.com/Suenaa/agenda-golang/service"
 	"github.com/spf13/cobra"
-	"github.com/Suenaa/agenda-go/logs"
+	"github.com/Suenaa/agenda-golang/logs"
 )
 
 // lsuCmd represents the lsu command

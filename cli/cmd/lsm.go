@@ -3,10 +3,10 @@ package cmd
 import (
 	"errors"
 	
-	"github.com/Suenaa/agenda-go/service"
-	"github.com/Suenaa/agenda-go/tools"
+	"github.com/Suenaa/agenda-golang/service"
+	"github.com/Suenaa/agenda-golang/tools"
 	"github.com/spf13/cobra"
-	"github.com/Suenaa/agenda-go/logs"
+	"github.com/Suenaa/agenda-golang/logs"
 )
 
 // lsmCmd represents the lsm command

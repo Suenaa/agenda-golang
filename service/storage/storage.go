@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/Suenaa/service-agenda-go/service/model"
-	"github.com/Suenaa/service-agenda-go/service/tools"
+	"github.com/Suenaa/agenda-golang/service/model"
+	"github.com/Suenaa/agenda-golang/service/tools"
 )
 
 //saveUser 将所有用户保存
