@@ -1,0 +1,141 @@
+FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+# Agenda
+
+Agenda is a simple API allowing consumers to schedule meeting on-line.
+
+# Group User
+
+Resource operations related to a user in the API.
+
+## User-Key [/key]
+
+### Get User Key [GET /key/getkey{?username,password}]
+
+get a security key for operations.
+
++ Parameters
+    - username : `root` (string, required) - User Name
+    - password : `123` (required)
+
++ Response 200 (application/json)
+
+        {
+            "key":"1e3576bt"
+        }
+
+### Register [POST]
+
++ Request (application/json)
+
+        {
+            "username":"zhang3",
+            "password":"zhang",
+            "email":"zhang3@mail2.sysu.edu.cn",
+            "phone":"1234567890"
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /users/1
+
+    + Body
+
+            {
+                "id": 1,
+                "key":"1e3576bt",
+                "username":"zhang3",
+                "password":"zhang",
+                "email":"zhang3@mail2.sysu.edu.cn",
+                "phone":"1234567890"
+            }
+
+## Users [/key/users{?key}]
+
++ Parameters
+    - key : `1e3576bt` (string, required)
+
+### List all Users [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id":1,
+                "key":"***",
+                "username":"zhang3",
+                "password":"zhang",
+                "email":"zhang3@mail2.sysu.edu.cn",
+                "phone":"12345678901"
+            },{
+                "id":2,
+                "key":"***"
+                "username":"li4",
+                "password":"li",
+                "email":"li4@mail2.sysu.edu.cn",
+                "phone":"12345678900"
+            }
+        ]
+
+
+### Get User by username [GET /users/{username}]
+
++ Parameters
+    - username : `user` (string, required) - User Name
+
++ Response 200 (application/json)
+
+        {
+            "username":"zhang3"
+            "password":"zhang"
+            "email":"zhang3@mail2.sysu.edu.cn"
+            "telephone":"1234567890"
+        }
+        
+### Delete Current User [DELETE /users/{username,password}]
+
++ Parameters
+    - username : `user` (string, required) - User Name
+    - password : `pass` (string, required)
+
++ Response 204
+
+# Group Meetings
+
+Resources related to meetings in the API.
+
+## Meeting Collection [/meetings/{?key}]
+
++ Parameters
+    - key : `1e3576bt` (string, required)
+    
+### Create a meeting [POST]
+
++ Request (application/json)
+
+        {
+            "title":"Meeting",
+            "participators":["user2"],
+            "start":"2017-11-01 13:00",
+            "end":"2017-11-01 15:30"
+        }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "id":1,
+                "title":"Meeting",
+                "sponsor":"user1",
+                "participators":["user2"],
+                "start":"2017-11-01 13:00",
+                "end":"2017-11-01 15:30"
+            }
+
+### clear all meetings [DELETE]
+
++ Response 204
