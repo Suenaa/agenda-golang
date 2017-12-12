@@ -139,3 +139,17 @@ Resources related to meetings in the API.
 ### clear all meetings [DELETE]
 
 + Response 204
+
+### cancel a meeting [DELETE /{title}]
+
++ Parameters
+
+    - title : `Meeting` (string, required)
+
++ Request (application/json)
+
+        {
+            "title":"Meeting"
+        }
+
++ Response 204
