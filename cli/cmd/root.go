@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/Suenaa/service-agenda-go/logs"
+	"github.com/Suenaa/agenda-golang/service/logs"
 )
 
 var cfgFile string

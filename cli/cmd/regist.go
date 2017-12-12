@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Suenaa/agenda-golang/service"
-	"github.com/Suenaa/agenda-golang/tools"
+	"github.com/Suenaa/agenda-golang/service/service"
+	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/spf13/cobra"
-	"github.com/Suenaa/agenda-golang/logs"
+	"github.com/Suenaa/agenda-golang/service/logs"
 )
 
 // registCmd represents the regist command

@@ -3,7 +3,7 @@ package tools
 import (
 	"fmt"
 	"os"
-	"github.com/Suenaa/agenda-golang/logs"
+	"github.com/Suenaa/agenda-golang/service/logs"
 )
 
 //Report 输出错误

@@ -4,9 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Suenaa/agenda-golang/service"
+	"github.com/Suenaa/agenda-golang/service/service"
 	"github.com/spf13/cobra"
-	"github.com/Suenaa/agenda-golang/logs"
+	"github.com/Suenaa/agenda-golang/service/logs"
+	"github.com/Suenaa/agenda-golang/service/tools"
 )
 
 // cancelCmd represents the cancel command

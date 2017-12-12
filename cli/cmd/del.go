@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Suenaa/agenda-go/service"
-	"github.com/Suenaa/agenda-go/tools"
+	"github.com/Suenaa/agenda-golang/service/service"
+	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/spf13/cobra"
-	"github.com/Suenaa/agenda-go/logs"
+	"github.com/Suenaa/agenda-golang/service/logs"
 )
 
 // delCmd represents the del command
