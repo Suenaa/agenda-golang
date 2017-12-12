@@ -1,0 +1,74 @@
+[event]2017/11/01 15:45:32 user1 regists
+[event]2017/11/01 15:45:37 user2 regists
+[event]2017/11/01 15:46:28 user3 regists
+[error]2017/11/01 15:51:18 username not exist
+[error]2017/11/01 15:51:38 incorrect password
+[event]2017/11/01 15:51:42 user1 log in
+[event]2017/11/01 15:53:09 user log out
+[error]2017/11/01 15:54:30 this username is aleardy exist
+[event]2017/11/01 15:55:44 list all users
+[error]2017/11/01 15:56:38 incorrect password
+[event]2017/11/01 15:56:42 user1 log in
+[error]2017/11/01 15:56:59 incorrect password
+[event]2017/11/01 15:57:05 delete a user
+[event]2017/11/01 15:57:16 list all users
+[event]2017/11/01 15:59:30 user1 regists
+[error]2017/11/01 15:59:37 unknown command "lst" for "agd"
+
+Did you mean this?
+	lsm
+	lsu
+
+[event]2017/11/01 15:59:41 list all users
+[error]2017/11/01 16:00:55 no user login
+[event]2017/11/01 16:01:34 user3 log in
+[event]2017/11/01 16:01:38 create a meeting: title
+[event]2017/11/01 16:02:10 list meetings during 2017-11-01T10:00 - 2017-11-01T10:30
+[error]2017/11/01 16:03:38 title aleardy exist
+[event]2017/11/01 16:03:46 create a meeting: title2
+[event]2017/11/01 16:03:59 create a meeting: title3
+[error]2017/11/01 16:05:00 start time is after end time
+[event]2017/11/01 16:05:15 list meetings during 2017-11-01T0:00 - 2017-11-01T20:00
+[error]2017/11/01 16:07:54 participator user is not exist
+[event]2017/11/01 16:08:03 add participant(s) to the meeting: title2
+[error]2017/11/01 16:08:25 the title not exist
+[event]2017/11/01 16:08:34 delete participant(s) in the meeting: title3
+[event]2017/11/01 16:08:45 list all users
+[error]2017/11/01 16:08:50 start required
+[event]2017/11/01 16:09:03 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[error]2017/11/01 16:13:38 unknown command "cacel" for "agd"
+
+Did you mean this?
+	cancel
+
+[event]2017/11/01 16:14:09 cancel a meeting: title
+[event]2017/11/01 16:14:47 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[event]2017/11/01 16:16:05 create a meeting: title
+[event]2017/11/01 16:16:18 create a meeting: title3
+[error]2017/11/01 16:16:32 start required
+[event]2017/11/01 16:16:38 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[event]2017/11/01 16:17:15 quit meeting: title
+[event]2017/11/01 16:17:18 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[event]2017/11/01 16:19:27 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[event]2017/11/01 16:46:58 create a meeting: title
+[event]2017/11/01 16:47:08 create a meeting: title3
+[event]2017/11/01 16:47:38 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[error]2017/11/01 16:48:38 current user is the sponsor of the meeting, can't quit
+[event]2017/11/01 16:48:54 current user logs out
+[event]2017/11/01 16:49:37 user2 log in
+[error]2017/11/01 16:50:07 title aleardy exist
+[event]2017/11/01 16:50:14 create a meeting: title1
+[event]2017/11/01 16:50:33 list all users
+[error]2017/11/01 16:50:37 start required
+[event]2017/11/01 16:50:42 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[event]2017/11/01 16:55:02 create a meeting: title1
+[event]2017/11/01 16:55:17 create a meeting: title2
+[error]2017/11/01 16:55:37 title aleardy exist
+[error]2017/11/01 16:55:53 start required
+[event]2017/11/01 16:55:59 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[error]2017/11/01 16:56:43 current user is the sponsor of the meeting, can't quit
+[error]2017/11/01 16:56:52 the user is not participators
+[error]2017/11/01 16:59:11 start required
+[event]2017/11/01 16:59:16 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
+[event]2017/11/01 16:59:24 quit meeting: title3
+[event]2017/11/01 16:59:28 list meetings during 2017-11-01T0:00 - 2017-11-01T23:00
