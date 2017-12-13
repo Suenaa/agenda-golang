@@ -23,11 +23,11 @@ func NewServer() *negroni.Negroni {
 
 func initRoutes(mx *mux.Router, formatter *render.Render) {
 
-	//Get user key
-	mx.HandleFunc("/key/getkey", getUserKeyHandler(formatter)).Methods("GET")
+	//user login
+	mx.HandleFunc("/user/login", userLoginHandler(formatter)).Methods("GET")
 
 	//Create a new user
-	mx.HandleFunc("/key/register", createNewUserHandler(formatter)).Methods("POST")
+	mx.HandleFunc("/user/register", createNewUserHandler(formatter)).Methods("POST")
 
 	//List all Users
 	mx.HandleFunc("/users/allusers", listAllUsersHandler(formatter)).Methods("GET")
