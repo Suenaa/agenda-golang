@@ -7,7 +7,7 @@ import (
 	"github.com/unrolled/render"
 )
 
-func getUserKeyHandler(formatter *render.Render) http.HandlerFunc {
+func userLoginHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		formatter.JSON(w, http.StatusOK, struct {
