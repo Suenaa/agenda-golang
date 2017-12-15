@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"os"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/Suenaa/agenda-golang/service/logs"
 )
 
 const (
-	dbPath string = "./database.db"
+	dbPath string = "./agenda.db"
 )
 
-var db *sql.db
+var db *sql.DB
 
 type SQLExecer interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)

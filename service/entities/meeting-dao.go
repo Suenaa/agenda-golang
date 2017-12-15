@@ -4,9 +4,6 @@ import "strings"
 
 type meetingDao DaoSource
 
-var meetingQueryAll = "SELECT * FROM meetings"
-var meetingQueryByTitle = "SELECT * FROM meetings where title = ?"
-
 func (dao *meetingDao)Insert(meeting *Meeting) error {
 	var meetingInsertStmt = "insert into meetings(title, sponsor, participators, start, end) values(?, ?, ?, ?, ?)"
 
@@ -49,7 +46,7 @@ func (dao *meetingDao)QueryAll() []Meeting {
 }
 
 func (dao *meetingDao)QueryByTitle(title string) Meeting {
-	meetingQueryByTitle := "select * from meetings where title = " + title
+	meetingQueryByTitle := "select * from meetings where title=" + title
 	rows, err := dao.Query(meetingQueryByTitle)
 	defer rows.Close()
 	checkErr(err)
@@ -64,8 +61,8 @@ func (dao *meetingDao)QueryByTitle(title string) Meeting {
 }
 
 func (dao *meetingDao)QueryBy(key string, val string) []Meeting {
-	meetingQueryByTitle := "select * from meetings where " + key " = " + val
-	rows, err := dao.Query(meetingQueryByTitle)
+	meetingQueryBy := "select * from meetings where " + key + " = " + val
+	rows, err := dao.Query(meetingQueryBy)
 	defer rows.Close()
 	checkErr(err)
 	participants := ""
