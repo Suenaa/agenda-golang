@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/liziqiao/agenda-golang/service/service"
+	"github.com/Suenaa/agenda-golang/service/service"
 	flag "github.com/spf13/pflag"
 )
 

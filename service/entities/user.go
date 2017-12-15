@@ -1,12 +1,13 @@
-package model
+package entities
 
 import "fmt"
 
 type User struct {
-	Username string
-	Password string
-	Email string
-	Phone string
+	Id int           `json:"id"`
+	Username string  `json:"username"`
+	Password string  `json:"password"`
+	Email string     `json:"email"`
+	Phone string     `json:"phone"`
 }
 
 func (user *User) Init(name string, psw string, email string, phone string) {

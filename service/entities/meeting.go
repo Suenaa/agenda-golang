@@ -1,4 +1,4 @@
-package model
+package entities
 
 import (
 	"fmt"
@@ -6,11 +6,12 @@ import (
 )
 
 type Meeting struct {
-	Title string
-	Sponsor string
-	Participators []string
-	Start string
-	End string
+	Id int                  `json:"id"`
+	Title string            `json:"title"`
+	Sponsor string          `json:"sponsor"`
+	Participators []string  `json:"participators"`
+	Start string            `json:"start"`
+	End string              `json:"end"`
 }
 
 //the examples of start and end: 2017-10-20T19:00 2017-01-01T0:00
@@ -83,7 +84,6 @@ func (meeting Meeting) IsParticipator(username string) bool {
 	return false
 }
 
-//bool好像该改成err
 func (meeting *Meeting) AddParticipator(username string) bool {
 	if meeting.IsParticipator(username) { //判断是否已在参与者当中
 		return false
@@ -92,7 +92,6 @@ func (meeting *Meeting) AddParticipator(username string) bool {
 	return true
 }
 
-//bool好像该改成err
 func (meeting *Meeting) DeleteParticipator(username string) bool {
 	for i := 0; i < len(meeting.GetParticipators()); i++ {
 		if meeting.GetParticipators()[i] == username {

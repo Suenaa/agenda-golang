@@ -2,13 +2,15 @@ package service
 
 import (
   "errors"
-  model "github.com/Suenaa/agenda-go/model"
-  storage "github.com/Suenaa/agenda-go/storage"
+  "github.com/Suenaa/agenda-golang/service/entities"
 )
+
+currentUsername := ""
+currentUser := User{}
 
 //用户注册
 func UserRegister(userName string, password string, email string, phone string) error {
-  allUsers := storage.GetAllUser()
+  allUsers := entities.UserService.QueryAll()
   isNameOk := true
   for i:= 0; i < len(allUsers); i ++ {
     if userName == allUsers[i].GetUsername() {
@@ -16,7 +18,9 @@ func UserRegister(userName string, password string, email string, phone string) 
     }
   }
   if isNameOk == true {
-    storage.AddUser(model.User{Username:userName, Password:password, Email:email, Phone:phone})
+    var user entities.User
+    user.Init(userName, password, email, phone)
+    entities.UserService.Insert(&user)
   } else {
     return errors.New("this username is aleardy exist")
   }
@@ -25,14 +29,14 @@ func UserRegister(userName string, password string, email string, phone string) 
 
 //用户登录
 func UserLogin(userName string, password string) error {
-  if storage.GetCurrentUser() != "" {
+  if currentUsername != "" {
     return errors.New("login failed, exist user login")
   }
-  allUsers := storage.GetAllUser()
+  allUsers := entities.UserService.QueryAll()
   for i := 0; i < len(allUsers); i ++ {
     if userName == allUsers[i].GetUsername() {
       if password == allUsers[i].GetPassword() {
-        storage.SetCurrentUser(userName)
+        currentUsername = userName
         return nil
       } else {
         return errors.New("incorrect password")
@@ -44,17 +48,17 @@ func UserLogin(userName string, password string) error {
 
 //用户登出
 func UserLogout() error {
-  if storage.GetCurrentUser() == "" {
+  if currentUsername == "" {
     return errors.New("no user login")
   } else {
-    storage.SetCurrentUser("")
+    currentUsername = ""
     return nil
   }
 }
 
 //查询所有用户
-func QueryAllUsers() []model.User {
-  return storage.GetAllUser()
+func QueryAllUsers() []entities.User {
+  return entities.UserService.QueryAll()
 }
 
 
@@ -62,17 +66,16 @@ func QueryAllUsers() []model.User {
 //删除该用户的用户信息以及参加和发起的会议，如果该用户是某一个会议的发起者，则删除该会议，
 //如果由于删除该用户造成某一个会议的参与者变成0，则删除该会议
 func DeleteUser(password string) error {
-  currentUser := storage.GetCurrentUser()
-  allUsers := storage.GetAllUser()
-  if currentUser == "" {
+  allUsers := entities.UserService.QueryAll()
+  if currentUsername == "" {
     return errors.New("no user login")
   } else {
     for i := 0; i < len(allUsers); i ++ {
-      if currentUser == allUsers[i].GetUsername() {
+      if currentUsername == allUsers[i].GetUsername() {
         if allUsers[i].GetPassword() == password {
-          DeleteMeetingByUserName(currentUser)
-          storage.DeleteUser(currentUser)
-          storage.SetCurrentUser("")
+          entities.MeetingService.DeleteBySponsor(currentUsername)
+          entities.UserService.DeleteByName(currentUsername)
+          currentUsername = ""
           return nil
         } else {
           return errors.New("incorrect password")
@@ -86,19 +89,18 @@ func DeleteUser(password string) error {
 
 //创建会议
 func CreateMeeting(title string, startDate string, endDate string, participators []string) error {
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+  if currentUsername == "" {
     return errors.New("no user login")
   }
-  start := model.StringToDate(startDate)
-  end := model.StringToDate(endDate)
+  start := entities.StringToDate(startDate)
+  end := entities.StringToDate(endDate)
   if start.IsAfter(end) {
     return errors.New("start time is after end time")
   }
-  if storage.GetMeeting(title) != nil {
+  if entities.MeetingService.QueryByTitle(title) != nil {
     return errors.New("title aleardy exist")
   }
-  if !IsUserSpace(currentUser, startDate, endDate) {
+  if !IsUserSpace(currentUsername, startDate, endDate) {
     return errors.New("the sponsor at that time is busy")
   }
   for i := 0; i < len(participators); i ++ {
@@ -109,23 +111,24 @@ func CreateMeeting(title string, startDate string, endDate string, participators
       return errors.New("participator "+participators[i]+" is busy at that time")
     }
   }
-  storage.AddMeeting(model.Meeting{Title:title, Sponsor:currentUser, Participators:participators, Start:startDate, End:endDate})
+  meeting := Meeting{}
+  meeting.Init(title, currentUsername, Participators, startDate, endDate)
+  entities.MeetingService.Insert(&meeting)
   return nil
 }
 
 //添加自己发起的某一会议的一个参与者
 func AddParticipator(title string, participator string) error {
-  tMeeting := storage.GetMeeting(title)
-  startTime := (*tMeeting).GetStart()
-  endTime := (*tMeeting).GetEnd()
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+  tMeeting := entities.MeetingService.QueryByTitle(title)
+  startTime := (tMeeting).GetStart()
+  endTime := (tMeeting).GetEnd()
+  if currentUsername == "" {
     return errors.New("no user login")
   }
   if tMeeting == nil {
     return errors.New("the title not exist")
   }
-  if currentUser != (*tMeeting).GetSponsor() {
+  if currentUsername != (tMeeting).GetSponsor() {
     return errors.New("current user is not the sponsor of the meeting")
   }
   if !IsUser(participator) {
@@ -137,7 +140,7 @@ func AddParticipator(title string, participator string) error {
   if tMeeting.AddParticipator(participator) == false {
     return errors.New("the new participator is aleardy in the participators")
   } else {
-    storage.UpdateMeeting(*tMeeting)
+    entities.MeetingService.Update(tMeeting)
     return nil
   }
 }
@@ -145,49 +148,47 @@ func AddParticipator(title string, participator string) error {
 //删除自己创建的某一会议的一个参与者
 //如果会议的参与者因此变成0，则删除该会议
 func DeleteParticipator(title string, participator string) error {
-  tMeeting := storage.GetMeeting(title)
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+  tMeeting := entities.MeetingService.QueryByTitle(title)
+  if currentUsername == "" {
     return errors.New("no user login")
   }
   if tMeeting == nil {
     return errors.New("the title not exist")
   }
-  if currentUser != (*tMeeting).GetSponsor() {
+  if currentUsername != tMeeting.GetSponsor() {
     return errors.New("current user is not the sponsor of the meeting")
   }
   if !IsUser(participator) {
     return errors.New("participator "+participator+" is not exist")
   }
-  if !(*tMeeting).IsParticipator(participator) {
+  if !tMeeting.IsParticipator(participator) {
     return errors.New("participator is not in the participators")
   }
   tMeeting.DeleteParticipator(participator)
-  storage.UpdateMeeting(*tMeeting)
+  entities.MeetingService.Update(tMeeting)
   if len((*tMeeting).GetParticipators()) == 0 {
-    storage.DeleteMeeting(title)
+    entities.MeetingService.DeleteByTitle(title)
   }
   return nil
 }
 
 //查询会议，通过开始时间和结束时间查询当前用户需要参加的所有会议
-func QueryMeeting(startDate string, endDate string) ([]model.Meeting, error) {
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+func QueryMeeting(startDate string, endDate string) ([]entities.Meeting, error) {
+  if currentUsername == "" {
     return nil,errors.New("no user login")
   }
-  start := model.StringToDate(startDate)
-  end := model.StringToDate(endDate)
+  start := entities.StringToDate(startDate)
+  end := entities.StringToDate(endDate)
   if start.IsAfter(end) {
     return nil,errors.New("start time is after end time")
   }
-  allMeeting := storage.GetALLMeeting()
-  returnMeeting := []model.Meeting{}
+  allMeeting := entities.MeetingService.QueryAll()
+  returnMeeting := []entities.Meeting{}
   for i := 0; i < len(allMeeting); i ++ {
-    if allMeeting[i].IsSponsor(currentUser) {
+    if allMeeting[i].IsSponsor(currentUsername) {
       returnMeeting = append(returnMeeting, allMeeting[i])
     }
-    if allMeeting[i].IsParticipator(currentUser) {
+    if allMeeting[i].IsParticipator(currentUsername) {
       returnMeeting = append(returnMeeting, allMeeting[i])
     }
   }
@@ -196,41 +197,39 @@ func QueryMeeting(startDate string, endDate string) ([]model.Meeting, error) {
 
 //取消会议
 func DeleteMeeting(title string) error {
-  tMeeting := storage.GetMeeting(title)
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+  tMeeting := entities.MeetingService.QueryByTitle(title)
+  if currentUsername == "" {
     return errors.New("no user login")
   }
   if tMeeting == nil {
     return errors.New("the title not exist")
   }
-  if currentUser != (*tMeeting).GetSponsor() {
+  if currentUser != tMeeting.GetSponsor() {
     return errors.New("current user is not the sponsor of the meeting")
   }
-  storage.DeleteMeeting(title)
+  entities.MeetingService.DeleteByTitle(title)
   return nil
 }
 
 //退出会议
 //如果退出会议之后的参与者为0的会议将会被删除
 func QuitMeeting(title string) error {
-  tMeeting := storage.GetMeeting(title)
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+  tMeeting := entities.MeetingService.QueryByTitle(title)
+  if currentUsername == "" {
     return errors.New("no user login")
   }
   if tMeeting == nil {
     return errors.New("the title not exist")
   }
-  if (*tMeeting).IsSponsor(currentUser) {
+  if tMeeting.IsSponsor(currentUser) {
     return errors.New("current user is the sponsor of the meeting, can't quit")
   }
-  if !(*tMeeting).IsParticipator(currentUser) {
+  if !tMeeting.IsParticipator(currentUser) {
     return errors.New("the user is not participators")
   }
-  (*tMeeting).DeleteParticipator(currentUser)
-  if len((*tMeeting).GetParticipators()) == 0 {
-    storage.DeleteMeeting(title)
+  tMeeting.DeleteParticipator(currentUser)
+  if len(tMeeting.GetParticipators()) == 0 {
+    entities.MeetingService.DeleteByTitle(title)
     return nil
   }
   return nil
@@ -238,14 +237,13 @@ func QuitMeeting(title string) error {
 
 //清空当前用户发起的所有会议安排
 func DeleteAllMeeting() error {
-  currentUser := storage.GetCurrentUser()
-  if currentUser == "" {
+  if currentUsername == "" {
     return errors.New("no user login")
   }
-  allMeeting := storage.GetALLMeeting()
+  allMeeting := entities.MeetingService.QueryAll()
   for i := 0; i < len(allMeeting); i ++ {
     if allMeeting[i].IsSponsor(currentUser) {
-      storage.DeleteMeeting(allMeeting[i].GetTitle())
+      entities.MeetingService.DeleteByTitle(allMeeting[i].GetTitle())
     }
   }
   return nil
@@ -255,20 +253,20 @@ func DeleteAllMeeting() error {
 
 //判断一个用户在某个时间段是否空闲
 func IsUserSpace(userName string, startDate string, endDate string) bool {
-  start := model.StringToDate(startDate)
-  end := model.StringToDate(endDate)
-  allMeeting := storage.GetALLMeeting()
+  start := entities.StringToDate(startDate)
+  end := entities.StringToDate(endDate)
+  allMeeting := entities.MeetingService.QueryAll()
   for i := 0; i < len(allMeeting); i ++ {
     if allMeeting[i].IsSponsor(userName) {
-      startTime := model.StringToDate(allMeeting[i].GetStart())
-      endTime := model.StringToDate(allMeeting[i].GetEnd())
+      startTime := entities.StringToDate(allMeeting[i].GetStart())
+      endTime := entities.StringToDate(allMeeting[i].GetEnd())
       if !(!endTime.IsAfter(start) || !end.IsAfter(startTime)) {
         return false
       }
     }
     if allMeeting[i].IsParticipator(userName) {
-      startTime := model.StringToDate(allMeeting[i].GetStart())
-      endTime := model.StringToDate(allMeeting[i].GetEnd())
+      startTime := entities.StringToDate(allMeeting[i].GetStart())
+      endTime := entities.StringToDate(allMeeting[i].GetEnd())
       if !(!endTime.IsAfter(start) || !end.IsAfter(startTime)) {
         return false
       }
@@ -279,19 +277,19 @@ func IsUserSpace(userName string, startDate string, endDate string) bool {
 
 //删除该用户发起的所有会议以及从参与会议中的参与者名单中删除
 func DeleteMeetingByUserName(userName string) {
-  allMeeting := storage.GetALLMeeting()
+  allMeeting := entities.MeetingService.QueryAll()
   for i := 0; i < len(allMeeting); i ++ {
     if allMeeting[i].IsSponsor(userName) {
-      storage.DeleteMeeting(allMeeting[i].GetTitle())
+      entities.MeetingService.DeleteByTitle(allMeeting[i].GetTitle())
       continue
     }
     if allMeeting[i].IsParticipator(userName) {
       tMeeting := &allMeeting[i]
       tMeeting.DeleteParticipator(userName)
       if len((*tMeeting).GetParticipators()) == 0 {
-        storage.DeleteMeeting(allMeeting[i].GetTitle())
+        entities.MeetingService.DeleteByTitle(allMeeting[i].GetTitle())
       } else {
-        storage.UpdateMeeting(*tMeeting)
+        entities.MeetingService.Update(allMeeting[i])
       }
     }
   }
@@ -299,7 +297,7 @@ func DeleteMeetingByUserName(userName string) {
 
 //判断传入的名字是否是已注册用户
 func IsUser(name string) bool {
-  allUser := storage.GetAllUser()
+  allUser := entities.UserService.QueryAll()
   for i := 0; i < len(allUser); i ++ {
     if name == allUser[i].GetUsername() {
       return true

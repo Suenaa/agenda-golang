@@ -1,32 +1,31 @@
-package storage
+package entities
 
 import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/Suenaa/agenda-golang/service/model"
 	"github.com/Suenaa/agenda-golang/service/tools"
 )
 
 //saveUser 将所有用户保存
-func saveUser(users []model.User) {
+func saveUser(users []User) {
 	jzon, err := json.Marshal(users)
 	tools.Report(err)
 	ioutil.WriteFile("datas/users.dat", jzon, 0644)
 }
 
 //readUser 读取所有用户
-func readUser() (res []model.User) {
+func readUser() (res []User) {
 	content, err := ioutil.ReadFile("datas/users.dat")
 	if err != nil {
-		return []model.User{}
+		return []User{}
 	}
 	json.Unmarshal(content, &res)
 	return
 }
 
 //saveMeeting 将所有会议保存
-func saveMeeting(meetings []model.Meeting) {
+func saveMeeting(meetings []Meeting) {
 	jzon, err := json.Marshal(meetings)
 	tools.Report(err)
 	err = ioutil.WriteFile("datas/meetings.dat", jzon, 0644)
@@ -34,10 +33,10 @@ func saveMeeting(meetings []model.Meeting) {
 }
 
 //readMeeting 读取所有会议
-func readMeeting() (res []model.Meeting) {
+func readMeeting() (res []Meeting) {
 	content, err := ioutil.ReadFile("datas/meetings.dat")
 	if err != nil {
-		return []model.Meeting{}
+		return []Meeting{}
 	}
 	err = json.Unmarshal(content, &res)
 	tools.Report(err)
@@ -45,7 +44,7 @@ func readMeeting() (res []model.Meeting) {
 }
 
 //AddUser 添加用户
-func AddUser(user model.User) {
+func AddUser(user User) {
 	users := readUser()
 	users = append(users, user)
 	saveUser(users)
@@ -85,19 +84,19 @@ func GetCurrentUser() string {
 }
 
 //GetAllUser 获取所有注册用户
-func GetAllUser() []model.User {
+func GetAllUser() []User {
 	return readUser()
 }
 
 //AddMeeting 增加会议
-func AddMeeting(meeting model.Meeting) {
+func AddMeeting(meeting Meeting) {
 	meetings := readMeeting()
 	meetings = append(meetings, meeting)
 	saveMeeting(meetings)
 }
 
 //GetMeeting 获取会议
-func GetMeeting(title string) *model.Meeting {
+func GetMeeting(title string) *Meeting {
 	meetings := readMeeting()
 	for _, meeting := range meetings {
 		if meeting.GetTitle() == title {
@@ -108,7 +107,7 @@ func GetMeeting(title string) *model.Meeting {
 }
 
 //UpdateMeeting 修改会议
-func UpdateMeeting(meeting model.Meeting) {
+func UpdateMeeting(meeting Meeting) {
 	meetings := readMeeting()
 	for index, m := range meetings {
 		if meeting.GetTitle() == m.GetTitle() {
@@ -120,7 +119,7 @@ func UpdateMeeting(meeting model.Meeting) {
 }
 
 //GetALLMeeting 获取所有会议
-func GetALLMeeting() []model.Meeting {
+func GetALLMeeting() []Meeting {
 	return readMeeting()
 }
 
