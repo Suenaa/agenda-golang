@@ -65,7 +65,6 @@ func (dao *meetingDao)QueryBy(key string, val string) []Meeting {
 	rows, err := dao.Query(meetingQueryBy)
 	defer rows.Close()
 	checkErr(err)
-	participants := ""
 	mlist := make([]Meeting, 0, 0)
 	for rows.Next() {
 		meeting := Meeting{}
@@ -106,7 +105,7 @@ func (dao *meetingDao)Update(meeting Meeting) error {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(participants, meeting.Title)
+	_, err = stmt.Exec(participants, meeting.Title)
 	if err != nil {
 		return err
 	}
