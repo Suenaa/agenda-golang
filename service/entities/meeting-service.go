@@ -4,16 +4,12 @@ type MeetingServiceProvider struct { }
 
 var MeetingService = MeetingServiceProvider {}
 
-var meetingInsertStmt = "INSERT meetings SET title=?,sponsor=?,participants=?,start=?,end=?"
-var meetingQueryAll = "SELECT * FROM meetings"
-var meetingQueryByTitle = "SELECT * FROM meetings where title = ?"
-
 func (*MeetingServiceProvider)Insert(meeting *Meeting) error {
 	tx, err := db.Begin()
 	checkErr(err)
 
 	dao := meetingDao{ tx }
-	err := dao.Insert(meeting)
+	err = dao.Insert(meeting)
 	if err != nil {
 		return err
 	}
@@ -24,8 +20,7 @@ func (*MeetingServiceProvider)Insert(meeting *Meeting) error {
 
 func (*MeetingServiceProvider)QueryAll() []Meeting {
 	dao := meetingDao{ db }
-	meetings := dao.QueryAll()
-	return meetings
+	return dao.QueryAll()
 }
 
 func (*MeetingServiceProvider)QueryByTitle(title string) Meeting {
@@ -36,8 +31,7 @@ func (*MeetingServiceProvider)QueryByTitle(title string) Meeting {
 
 func (*MeetingServiceProvider)QueryBy(key string, val string) []Meeting {
 	dao := meetingDao{ db }
-	meetings := dao.QueryBy(key, val)
-	return meetings
+	return dao.QueryBy(key, val)
 }
 
 
@@ -61,7 +55,7 @@ func (*MeetingServiceProvider)Update(meeting Meeting) error {
 	checkErr(err)
 
 	dao := meetingDao{ tx }
-	err := dao.Update(meeting)
+	err = dao.Update(meeting)
 	if err != nil {
 		return err
 	}
