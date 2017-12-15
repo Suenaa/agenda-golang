@@ -34,7 +34,7 @@ func init() {
 	var err error
 	db, err = sql.Open("sqlite3", dbPath)
 	checkErr(err)
-	defer db.Close() //defer
+	//defer db.Close() //defer
 
 	if !isExitst {
 		initTables()
@@ -45,14 +45,14 @@ func init() {
 func initTables() {
 	sqlStmt := `
 	create table users(
-		id integer primary key auto_increment, 
+		id integer primary key, 
 		username text,
 		password text,
 		email text,
 		phone text
 		);
 	create table meetings(
-		id integer primary key auto_increment,
+		id integer primary key,
 		title text,
 		sponsor text,
 		participators text,

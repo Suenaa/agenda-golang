@@ -5,8 +5,7 @@ import (
   "github.com/Suenaa/agenda-golang/service/entities"
 )
 
-currentUsername := ""
-currentUser := User{}
+var currentUsername = ""
 
 //用户注册
 func UserRegister(userName string, password string, email string, phone string) error {
@@ -97,7 +96,7 @@ func CreateMeeting(title string, startDate string, endDate string, participators
   if start.IsAfter(end) {
     return errors.New("start time is after end time")
   }
-  if entities.MeetingService.QueryByTitle(title) != nil {
+  if entities.MeetingService.QueryByTitle(title).Title != "" {
     return errors.New("title aleardy exist")
   }
   if !IsUserSpace(currentUsername, startDate, endDate) {
@@ -111,8 +110,8 @@ func CreateMeeting(title string, startDate string, endDate string, participators
       return errors.New("participator "+participators[i]+" is busy at that time")
     }
   }
-  meeting := Meeting{}
-  meeting.Init(title, currentUsername, Participators, startDate, endDate)
+  meeting := entities.Meeting{}
+  meeting.Init(title, currentUsername, participators, startDate, endDate)
   entities.MeetingService.Insert(&meeting)
   return nil
 }
@@ -125,7 +124,7 @@ func AddParticipator(title string, participator string) error {
   if currentUsername == "" {
     return errors.New("no user login")
   }
-  if tMeeting == nil {
+  if tMeeting.Title == "" {
     return errors.New("the title not exist")
   }
   if currentUsername != (tMeeting).GetSponsor() {
@@ -152,7 +151,7 @@ func DeleteParticipator(title string, participator string) error {
   if currentUsername == "" {
     return errors.New("no user login")
   }
-  if tMeeting == nil {
+  if tMeeting.Title == "" {
     return errors.New("the title not exist")
   }
   if currentUsername != tMeeting.GetSponsor() {
@@ -166,7 +165,7 @@ func DeleteParticipator(title string, participator string) error {
   }
   tMeeting.DeleteParticipator(participator)
   entities.MeetingService.Update(tMeeting)
-  if len((*tMeeting).GetParticipators()) == 0 {
+  if len(tMeeting.GetParticipators()) == 0 {
     entities.MeetingService.DeleteByTitle(title)
   }
   return nil
@@ -201,10 +200,10 @@ func DeleteMeeting(title string) error {
   if currentUsername == "" {
     return errors.New("no user login")
   }
-  if tMeeting == nil {
+  if tMeeting.Title == "" {
     return errors.New("the title not exist")
   }
-  if currentUser != tMeeting.GetSponsor() {
+  if currentUsername != tMeeting.GetSponsor() {
     return errors.New("current user is not the sponsor of the meeting")
   }
   entities.MeetingService.DeleteByTitle(title)
@@ -218,16 +217,16 @@ func QuitMeeting(title string) error {
   if currentUsername == "" {
     return errors.New("no user login")
   }
-  if tMeeting == nil {
+  if tMeeting.Title == "" {
     return errors.New("the title not exist")
   }
-  if tMeeting.IsSponsor(currentUser) {
+  if tMeeting.IsSponsor(currentUsername) {
     return errors.New("current user is the sponsor of the meeting, can't quit")
   }
-  if !tMeeting.IsParticipator(currentUser) {
+  if !tMeeting.IsParticipator(currentUsername) {
     return errors.New("the user is not participators")
   }
-  tMeeting.DeleteParticipator(currentUser)
+  tMeeting.DeleteParticipator(currentUsername)
   if len(tMeeting.GetParticipators()) == 0 {
     entities.MeetingService.DeleteByTitle(title)
     return nil
@@ -242,7 +241,7 @@ func DeleteAllMeeting() error {
   }
   allMeeting := entities.MeetingService.QueryAll()
   for i := 0; i < len(allMeeting); i ++ {
-    if allMeeting[i].IsSponsor(currentUser) {
+    if allMeeting[i].IsSponsor(currentUsername) {
       entities.MeetingService.DeleteByTitle(allMeeting[i].GetTitle())
     }
   }
