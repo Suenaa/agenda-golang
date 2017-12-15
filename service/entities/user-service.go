@@ -9,7 +9,7 @@ func (*UserServiceProvider) Insert(user *User) error {
 	checkErr(err)
 
 	dao := userDao{ tx }
-	err := dao.Insert(user)
+	err = dao.Insert(user)
 	checkErr(err)
 	tx.Commit()
 	return nil
@@ -22,8 +22,7 @@ func (*UserServiceProvider) QueryAll() []User {
 
 func (*UserServiceProvider) QueryByName(name string) User {
 	dao := userDao{ db }
-	user, err := dao.QueryByName(name)
-	checkErr(err)
+	user := dao.QueryByName(name)
 	return user
 }
 
