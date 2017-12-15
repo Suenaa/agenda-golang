@@ -2,10 +2,9 @@ package service
 
 import (
   "errors"
+  "io/ioutil"
   "github.com/Suenaa/agenda-golang/service/entities"
 )
-
-var currentUsername = ""
 
 //用户注册
 func UserRegister(userName string, password string, email string, phone string) error {
@@ -19,7 +18,7 @@ func UserRegister(userName string, password string, email string, phone string) 
   if isNameOk == true {
     var user entities.User
     user.Init(userName, password, email, phone)
-    entities.UserService.Insert(&user)
+    return entities.UserService.Insert(&user)
   } else {
     return errors.New("this username is aleardy exist")
   }
@@ -28,6 +27,7 @@ func UserRegister(userName string, password string, email string, phone string) 
 
 //用户登录
 func UserLogin(userName string, password string) error {
+  currentUsername := GetCurrentUser()
   if currentUsername != "" {
     return errors.New("login failed, exist user login")
   }
@@ -36,7 +36,7 @@ func UserLogin(userName string, password string) error {
     if userName == allUsers[i].GetUsername() {
       if password == allUsers[i].GetPassword() {
         currentUsername = userName
-        return nil
+        return SetCurrentUser(userName)
       } else {
         return errors.New("incorrect password")
       }
@@ -47,11 +47,11 @@ func UserLogin(userName string, password string) error {
 
 //用户登出
 func UserLogout() error {
+  currentUsername := GetCurrentUser()
   if currentUsername == "" {
     return errors.New("no user login")
   } else {
-    currentUsername = ""
-    return nil
+    return SetCurrentUser("")
   }
 }
 
@@ -65,6 +65,7 @@ func QueryAllUsers() []entities.User {
 //删除该用户的用户信息以及参加和发起的会议，如果该用户是某一个会议的发起者，则删除该会议，
 //如果由于删除该用户造成某一个会议的参与者变成0，则删除该会议
 func DeleteUser(password string) error {
+  currentUsername := GetCurrentUser()
   allUsers := entities.UserService.QueryAll()
   if currentUsername == "" {
     return errors.New("no user login")
@@ -72,10 +73,15 @@ func DeleteUser(password string) error {
     for i := 0; i < len(allUsers); i ++ {
       if currentUsername == allUsers[i].GetUsername() {
         if allUsers[i].GetPassword() == password {
-          entities.MeetingService.DeleteBySponsor(currentUsername)
-          entities.UserService.DeleteByName(currentUsername)
-          currentUsername = ""
-          return nil
+          err := entities.MeetingService.DeleteBySponsor(currentUsername)
+          if err != nil {
+            return err
+          }
+          err = entities.UserService.DeleteByName(currentUsername)
+          if err != nil {
+            return err
+          }
+          return SetCurrentUser("")
         } else {
           return errors.New("incorrect password")
         }
@@ -88,6 +94,7 @@ func DeleteUser(password string) error {
 
 //创建会议
 func CreateMeeting(title string, startDate string, endDate string, participators []string) error {
+  currentUsername := GetCurrentUser()
   if currentUsername == "" {
     return errors.New("no user login")
   }
@@ -112,12 +119,12 @@ func CreateMeeting(title string, startDate string, endDate string, participators
   }
   meeting := entities.Meeting{}
   meeting.Init(title, currentUsername, participators, startDate, endDate)
-  entities.MeetingService.Insert(&meeting)
-  return nil
+  return entities.MeetingService.Insert(&meeting)
 }
 
 //添加自己发起的某一会议的一个参与者
 func AddParticipator(title string, participator string) error {
+  currentUsername := GetCurrentUser()
   tMeeting := entities.MeetingService.QueryByTitle(title)
   startTime := (tMeeting).GetStart()
   endTime := (tMeeting).GetEnd()
@@ -139,14 +146,14 @@ func AddParticipator(title string, participator string) error {
   if tMeeting.AddParticipator(participator) == false {
     return errors.New("the new participator is aleardy in the participators")
   } else {
-    entities.MeetingService.Update(tMeeting)
-    return nil
+    return entities.MeetingService.Update(tMeeting)
   }
 }
 
 //删除自己创建的某一会议的一个参与者
 //如果会议的参与者因此变成0，则删除该会议
 func DeleteParticipator(title string, participator string) error {
+  currentUsername := GetCurrentUser()
   tMeeting := entities.MeetingService.QueryByTitle(title)
   if currentUsername == "" {
     return errors.New("no user login")
@@ -166,13 +173,14 @@ func DeleteParticipator(title string, participator string) error {
   tMeeting.DeleteParticipator(participator)
   entities.MeetingService.Update(tMeeting)
   if len(tMeeting.GetParticipators()) == 0 {
-    entities.MeetingService.DeleteByTitle(title)
+    return entities.MeetingService.DeleteByTitle(title)
   }
   return nil
 }
 
 //查询会议，通过开始时间和结束时间查询当前用户需要参加的所有会议
 func QueryMeeting(startDate string, endDate string) ([]entities.Meeting, error) {
+  currentUsername := GetCurrentUser()
   if currentUsername == "" {
     return nil,errors.New("no user login")
   }
@@ -196,6 +204,7 @@ func QueryMeeting(startDate string, endDate string) ([]entities.Meeting, error) 
 
 //取消会议
 func DeleteMeeting(title string) error {
+  currentUsername := GetCurrentUser()
   tMeeting := entities.MeetingService.QueryByTitle(title)
   if currentUsername == "" {
     return errors.New("no user login")
@@ -206,13 +215,13 @@ func DeleteMeeting(title string) error {
   if currentUsername != tMeeting.GetSponsor() {
     return errors.New("current user is not the sponsor of the meeting")
   }
-  entities.MeetingService.DeleteByTitle(title)
-  return nil
+  return entities.MeetingService.DeleteByTitle(title)
 }
 
 //退出会议
 //如果退出会议之后的参与者为0的会议将会被删除
 func QuitMeeting(title string) error {
+  currentUsername := GetCurrentUser()
   tMeeting := entities.MeetingService.QueryByTitle(title)
   if currentUsername == "" {
     return errors.New("no user login")
@@ -228,21 +237,25 @@ func QuitMeeting(title string) error {
   }
   tMeeting.DeleteParticipator(currentUsername)
   if len(tMeeting.GetParticipators()) == 0 {
-    entities.MeetingService.DeleteByTitle(title)
-    return nil
+    return entities.MeetingService.DeleteByTitle(title)
   }
-  return nil
+  return entities.MeetingService.Update(tMeeting)
 }
 
 //清空当前用户发起的所有会议安排
 func DeleteAllMeeting() error {
+  currentUsername := GetCurrentUser()
   if currentUsername == "" {
     return errors.New("no user login")
   }
   allMeeting := entities.MeetingService.QueryAll()
+  if allMeeting[0].Title == "" {
+    return nil
+  }
   for i := 0; i < len(allMeeting); i ++ {
     if allMeeting[i].IsSponsor(currentUsername) {
-      entities.MeetingService.DeleteByTitle(allMeeting[i].GetTitle())
+      err := entities.MeetingService.DeleteByTitle(allMeeting[i].GetTitle())
+      return err
     }
   }
   return nil
@@ -303,4 +316,17 @@ func IsUser(name string) bool {
     }
   }
   return false
+}
+
+func SetCurrentUser(name string) error {
+  err := ioutil.WriteFile("./current.dat", []byte(name), 0644)
+  return err
+}
+
+func GetCurrentUser() string {
+  content, err := ioutil.ReadFile("./current.dat")
+  if err != nil {
+    return ""
+  }
+  return string(content)
 }

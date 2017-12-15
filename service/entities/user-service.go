@@ -7,10 +7,18 @@ var UserService = UserServiceProvider {}
 func (*UserServiceProvider) Insert(user *User) error {
 	tx, err := db.Begin()
 	checkErr(err)
+	if err != nil {
+		return err
+	}
+	
 
 	dao := userDao{ tx }
 	err = dao.Insert(user)
 	checkErr(err)
+	if err != nil {
+		return err
+	}
+	
 	tx.Commit()
 	return nil
 }
@@ -30,5 +38,9 @@ func (*UserServiceProvider)DeleteByName(name string) error {
 	dao := userDao{ db }
 	err := dao.DeleteByName(name)
 	checkErr(err)
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }

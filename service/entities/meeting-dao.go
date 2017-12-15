@@ -37,7 +37,7 @@ func (dao *meetingDao)QueryAll() []Meeting {
 	for rows.Next() {
 		meeting := Meeting{}
 		participants := ""
-		err := rows.Scan(&meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
+		err := rows.Scan(&meeting.Id, &meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
 		meeting.Participators = strings.Split(participants, "&")
 		checkErr(err)
 		mlist = append(mlist, meeting)
@@ -53,7 +53,8 @@ func (dao *meetingDao)QueryByTitle(title string) Meeting {
 	meeting := Meeting{}
 	participants := ""
 	if rows.Next() {
-		err = rows.Scan(&meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
+		err = rows.Scan(&meeting.Id, &meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
+		meeting.Participators = strings.Split(participants, "&")
 	}
 	checkErr(err)
 
@@ -69,7 +70,7 @@ func (dao *meetingDao)QueryBy(key string, val string) []Meeting {
 	for rows.Next() {
 		meeting := Meeting{}
 		participants := ""
-		err := rows.Scan(&meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
+		err := rows.Scan(&meeting.Id, &meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
 		meeting.Participators = strings.Split(participants, "&")
 		checkErr(err)
 		mlist = append(mlist, meeting)
@@ -78,7 +79,7 @@ func (dao *meetingDao)QueryBy(key string, val string) []Meeting {
 }
 
 func (dao *meetingDao)DeleteByTitle(title string) error {
-	meetingDeleteByTitle := "delete from meeting where title = " + title
+	meetingDeleteByTitle := "delete from meetings where title = " + title
 	_, err := dao.Exec(meetingDeleteByTitle)
 	if err != nil {
 		return err
@@ -87,7 +88,7 @@ func (dao *meetingDao)DeleteByTitle(title string) error {
 }
 
 func (dao *meetingDao)DeleteBySponsor(sponsor string) error {
-	meetingDeleteBySponsor := "delete from meeting where sponsor = " + sponsor
+	meetingDeleteBySponsor := "delete from meetings where sponsor = " + sponsor
 	_, err := dao.Exec(meetingDeleteBySponsor)
 	if err != nil {
 		return err

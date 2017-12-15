@@ -51,23 +51,25 @@ func initTables() {
 		email text,
 		phone text
 		);
-	create table meetings(
+	`
+	_, err := db.Exec(sqlStmt)
+	checkErr(err)
+
+	sqlStmt = `create table meetings(
 		id integer primary key,
 		title text,
 		sponsor text,
 		participators text,
 		start text,
 		end text
-		);
-	`
-	_, err := db.Exec(sqlStmt)
+		);`
+	_, err = db.Exec(sqlStmt)
 	checkErr(err)
-
 }
 
 func checkErr(err error) {
 	if err != nil {
 		logs.ErrLog(err)
-		panic(err)
+		//panic(err)
 	}
 }

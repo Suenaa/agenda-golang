@@ -45,7 +45,7 @@ func (dao *userDao)QueryAll() []User {
 }
 
 func (dao *userDao)QueryByName(name string) User {
-	userQueryByName := "select * from users where username = " + name
+	userQueryByName := "select * from users where username=" + name
 	rows, err := dao.Query(userQueryByName)
 	defer rows.Close()
 	checkErr(err)
@@ -59,7 +59,7 @@ func (dao *userDao)QueryByName(name string) User {
 }
 
 func (dao *userDao)DeleteByName(name string) error {
-	userDeleteByName := "delete from users where username = " + name
+	userDeleteByName := "delete from users where username=" + name
 	_, err := dao.Exec(userDeleteByName)
 	if err != nil {
 		return err
