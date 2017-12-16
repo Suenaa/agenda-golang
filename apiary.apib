@@ -22,7 +22,13 @@ Resource operations related to users in the API.
                 "success"
             }
 
-## Register [POST /user/register]
+## Register [POST /user/register{?username,password,email,phone}]
+
++ Parameter
+    - username : `zhang3` (string, required) - User Name
+    - password : `123` (required) - Password
+    - email : `123@mail.com` (required)
+    - phone : `12345678901` (required)
 
 + Request (application/json)
 
@@ -71,7 +77,11 @@ Resource operations related to users in the API.
 + Parameters
     - password : `pass` (string, required)
 
-+ Response 204
++ Response 200
+    
+            {
+                "success"
+            }
 
 # Group Meetings
 
@@ -132,4 +142,8 @@ Resources related to meetings in the API.
 
 ## clear all meetings [DELETE /meetings/deletemeetings]
 
-+ Response 204
++ Response 200
+    
+            {
+                "success"
+            }
