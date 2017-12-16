@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	out, e = os.OpenFile("datas/logs.log", os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0666)
+	out, e = os.OpenFile("./logs.log", os.O_APPEND | os.O_WRONLY | os.O_CREATE, 0666)
 	outWriter = io.Writer(out)
 	logger = log.New(outWriter, "[agenda] ", log.LstdFlags)
 )
