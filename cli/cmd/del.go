@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"errors"
+	"net/http"
 	"fmt"
 
-	"github.com/Suenaa/agenda-golang/service/service"
 	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/spf13/cobra"
 	"github.com/Suenaa/agenda-golang/service/logs"
@@ -20,9 +20,14 @@ var delCmd = &cobra.Command{
 		if password == "" {
 			tools.Report(errors.New("password required"))
 		}
-		if err := service.DeleteUser(password); err == nil {
+		req, err := http.NewRequest(http.MethodDelete,host+"/users/deleteuser", nil)
+		tools.Report(err)
+		client := &http.Client{}
+		res, err1 := client.Do(req)
+		if err1 == nil {
 			fmt.Println("Success")
 			logs.EventLog("delete a user")
+			defer res.Body.Close()
 		} else {
 			tools.Report(err)
 		}
