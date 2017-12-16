@@ -19,8 +19,6 @@ func TestRegister(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	fmt.Println("------TEST of Login------")
-	server := service.NewServer()
-	server.Run(":8080")
 	logoutCmd.Run(logoutCmd, nil)
 	loginCmd.Flags().Set("username", "user")
 	loginCmd.Flags().Set("password", "123")
@@ -29,8 +27,6 @@ func TestLogin(t *testing.T) {
 
 func TestLogout(t *testing.T) {
 	fmt.Println("------TEST of Logout------")
-	server := service.NewServer()
-	server.Run(":8080")
 	loginCmd.Flags().Set("username", "user")
 	loginCmd.Flags().Set("password", "123")
 	loginCmd.Run(loginCmd, nil)
@@ -39,15 +35,11 @@ func TestLogout(t *testing.T) {
 
 func TestListAllUsers(t *testing.T) {
 	fmt.Println("------TEST of Listing all users------")
-	server := service.NewServer()
-	server.Run(":8080")
 	lsuCmd.Run(lsuCmd, nil)
 }
 
 func TestCreateNewMeeting(t *testing.T) {
 	fmt.Println("------TEST of Creating a new meeting------")
-	server := service.NewServer()
-	server.Run(":8080")
 	cmCmd.Flags().Set("title", "testMeeting")
 	cmCmd.Flags().Set("participant", "testUser0,testUser1")
 	cmCmd.Flags().Set("start", "2017-10-20T19:00")
@@ -57,14 +49,10 @@ func TestCreateNewMeeting(t *testing.T) {
 
 func TestListAllMeetings(t *testing.T) {
 	fmt.Println("------TEST of Listing all meetings------")
-	server := service.NewServer()
-	server.Run(":8080")
 	lsmCmd.Run(lsmCmd, nil)
 }
 
 func TestClearMeetings(t *testing.T) {
 	fmt.Println("------TEST of clearing all meetings------")
-	server := service.NewServer()
-	server.Run(":8080")
 	clearCmd.Run(clearCmd, nil)
 }
