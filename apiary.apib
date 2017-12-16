@@ -7,25 +7,22 @@ Agenda is a simple API allowing consumers to schedule meeting on-line.
 
 # Group User
 
-Resource operations related to a user in the API.
+Resource operations related to users in the API.
 
-## User-Key [/key]
 
-### Get User Key [GET /key/getkey{?username,password}]
+## Login [GET /user/login{?username,password}]
 
-get a security key for operations.
++ Parameter
+    - username : `zhang3` (string, required) - User Name
+    - password : `123` (required) - Password
+    
++ Response 200
+    
+            {
+                "success"
+            }
 
-+ Parameters
-    - username : `root` (string, required) - User Name
-    - password : `123` (required)
-
-+ Response 200 (application/json)
-
-        {
-            "key":"1e3576bt"
-        }
-
-### Register [POST]
+## Register [POST /user/register]
 
 + Request (application/json)
 
@@ -38,67 +35,40 @@ get a security key for operations.
 
 + Response 201 (application/json)
 
-    + Headers
-
-            Location: /users/1
-
     + Body
 
             {
                 "id": 1,
-                "key":"1e3576bt",
                 "username":"zhang3",
                 "password":"zhang",
                 "email":"zhang3@mail2.sysu.edu.cn",
                 "phone":"1234567890"
             }
 
-## Users [/key/users{?key}]
 
-+ Parameters
-    - key : `1e3576bt` (string, required)
-
-### List all Users [GET]
+## List all Users [GET /users/allusers]
 
 + Response 200 (application/json)
 
         [
             {
                 "id":1,
-                "key":"***",
                 "username":"zhang3",
                 "password":"zhang",
                 "email":"zhang3@mail2.sysu.edu.cn",
                 "phone":"12345678901"
-            },{
+            }, {
                 "id":2,
-                "key":"***"
                 "username":"li4",
                 "password":"li",
                 "email":"li4@mail2.sysu.edu.cn",
                 "phone":"12345678900"
             }
         ]
-
-
-### Get User by username [GET /users/{username}]
-
-+ Parameters
-    - username : `user` (string, required) - User Name
-
-+ Response 200 (application/json)
-
-        {
-            "username":"zhang3"
-            "password":"zhang"
-            "email":"zhang3@mail2.sysu.edu.cn"
-            "telephone":"1234567890"
-        }
         
-### Delete Current User [DELETE /users/{username,password}]
+## Delete Current User [DELETE /users/deleteuser{?password}]
 
 + Parameters
-    - username : `user` (string, required) - User Name
     - password : `pass` (string, required)
 
 + Response 204
@@ -107,20 +77,23 @@ get a security key for operations.
 
 Resources related to meetings in the API.
 
-## Meeting Collection [/meetings/{?key}]
+## Create a meeting [POST /meetings/newmeeting{?title,currentUser,participators,start,end}]
 
 + Parameters
-    - key : `1e3576bt` (string, required)
-    
-### Create a meeting [POST]
+    - title : `title` (string, required)
+    - currentUser: `user` (string, required)
+    - participators : `user2` (string, required)
+    - start : `2017-11-01T10:00` (string, required)
+    - end : `2017-11-01T11:00` (string, required)
 
 + Request (application/json)
 
         {
-            "title":"Meeting",
+            "title":"title",
+            "participators":"user"
             "participators":["user2"],
-            "start":"2017-11-01 13:00",
-            "end":"2017-11-01 15:30"
+            "start":"2017-11-01T10:00",
+            "end":"2017-11-01T11:00"
         }
 
 + Response 201 (application/json)
@@ -132,24 +105,31 @@ Resources related to meetings in the API.
                 "title":"Meeting",
                 "sponsor":"user1",
                 "participators":["user2"],
-                "start":"2017-11-01 13:00",
-                "end":"2017-11-01 15:30"
+                "start":"2017-11-01 10:00",
+                "end":"2017-11-01 11:30"
             }
 
-### clear all meetings [DELETE]
+## list all meeting [GET /meetings/allmeetings]
 
-+ Response 204
++ Response 200 (application/json)
 
-### cancel a meeting [DELETE /{title}]
+        [
+            {
+                "id":1,
+                "title":"Meeting1",
+                "sponsor":"user1",
+                "participators":["user2"],
+                "start":"2017-11-01 10:00",
+                "end":"2017-11-01 11:30"
+            }, {
+                "id":2,
+                "title":"Meeting2",
+                "sponsor":"user1",
+                "participators":["user3"],
+                "start":"2017-11-02 10:00",
+                "end":"2017-11-02 11:30"
+            }
 
-+ Parameters
-
-    - title : `Meeting` (string, required)
-
-+ Request (application/json)
-
-        {
-            "title":"Meeting"
-        }
+## clear all meetings [DELETE /meetings/deletemeetings]
 
 + Response 204
