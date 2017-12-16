@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	
-	"github.com/Suenaa/agenda-golang/service/service"
 	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/spf13/cobra"
 	"github.com/Suenaa/agenda-golang/service/logs"
@@ -23,13 +25,16 @@ var lsmCmd = &cobra.Command{
 		if end == "" {
 			tools.Report(errors.New("end required"))
 		}
-		meetings, err := service.QueryMeeting(start, end)
+		res, err := http.Get(host + "/meetings/allmeetings?startdate=" +
+			start + "&enddate=" + end)	
 		if err != nil {
 			tools.Report(err)
+		} else {
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			fmt.Println(string(body))
 		}
-		for _, m := range meetings {
-			m.String()
-		}
+		
 		logs.EventLog("list meetings during " + start + " - " + end)
 	},
 }
