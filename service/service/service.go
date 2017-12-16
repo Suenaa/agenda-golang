@@ -134,7 +134,7 @@ func AddParticipator(title string, participator string) error {
   if tMeeting.Title == "" {
     return errors.New("the title not exist")
   }
-  if currentUsername != (tMeeting).GetSponsor() {
+  if currentUsername != tMeeting.GetSponsor() {
     return errors.New("current user is not the sponsor of the meeting")
   }
   if !IsUser(participator) {

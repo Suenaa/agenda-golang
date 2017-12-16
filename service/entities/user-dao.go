@@ -29,7 +29,7 @@ func (dao *userDao)Insert(user *User) error {
 }
 
 func (dao *userDao)QueryAll() []User {
-	var userQueryAll = "select * from users"
+	var userQueryAll = "select * from users;"
 	rows, err := dao.Query(userQueryAll)
 	checkErr(err)
 	defer rows.Close()
@@ -45,11 +45,11 @@ func (dao *userDao)QueryAll() []User {
 }
 
 func (dao *userDao)QueryByName(name string) User {
-	userQueryByName := "select * from users where username=" + name
+	userQueryByName := "select * from users where username='" + name + "';"
 	rows, err := dao.Query(userQueryByName)
 	defer rows.Close()
 	checkErr(err)
-	u := User{}
+	u := User{Username:""}
 	if rows.Next() {
 		err = rows.Scan(&u.Id, &u.Username, &u.Password, &u.Email, &u.Phone)
 	}
@@ -59,7 +59,7 @@ func (dao *userDao)QueryByName(name string) User {
 }
 
 func (dao *userDao)DeleteByName(name string) error {
-	userDeleteByName := "delete from users where username=" + name
+	userDeleteByName := "delete from users where username='" + name + "';"
 	_, err := dao.Exec(userDeleteByName)
 	if err != nil {
 		return err

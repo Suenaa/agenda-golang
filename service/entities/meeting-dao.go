@@ -13,22 +13,16 @@ func (dao *meetingDao)Insert(meeting *Meeting) error {
 	}
 	defer stmt.Close()
 
-	var participants = strings.Join(meeting.Participators, "&")
-	res, err := stmt.Exec(meeting.Title, meeting.Sponsor, participants, meeting.Start, meeting.End)
+	participants := strings.Join(meeting.Participators, "&")
+	_, err = stmt.Exec(meeting.Title, meeting.Sponsor, participants, meeting.Start, meeting.End)
 	if err != nil {
 		return err
 	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		return err
-	}
-	meeting.Id = int(id)
 	return nil
 }
 
 func (dao *meetingDao)QueryAll() []Meeting {
-	var meetingQueryAll = "select * from meetings"
+	var meetingQueryAll = "select * from meetings;"
 	rows, err := dao.Query(meetingQueryAll)
 	checkErr(err)
 	defer rows.Close()
@@ -46,11 +40,11 @@ func (dao *meetingDao)QueryAll() []Meeting {
 }
 
 func (dao *meetingDao)QueryByTitle(title string) Meeting {
-	meetingQueryByTitle := "select * from meetings where title=" + title
+	meetingQueryByTitle := "select * from meetings where title='" + title + "';"
 	rows, err := dao.Query(meetingQueryByTitle)
 	defer rows.Close()
 	checkErr(err)
-	meeting := Meeting{}
+	meeting := Meeting{Title:""}
 	participants := ""
 	if rows.Next() {
 		err = rows.Scan(&meeting.Id, &meeting.Title, &meeting.Sponsor, &participants, &meeting.Start, &meeting.End)
@@ -62,7 +56,7 @@ func (dao *meetingDao)QueryByTitle(title string) Meeting {
 }
 
 func (dao *meetingDao)QueryBy(key string, val string) []Meeting {
-	meetingQueryBy := "select * from meetings where " + key + " = " + val
+	meetingQueryBy := "select * from meetings where " + key + " = '" + val + "';"
 	rows, err := dao.Query(meetingQueryBy)
 	defer rows.Close()
 	checkErr(err)
@@ -79,7 +73,7 @@ func (dao *meetingDao)QueryBy(key string, val string) []Meeting {
 }
 
 func (dao *meetingDao)DeleteByTitle(title string) error {
-	meetingDeleteByTitle := "delete from meetings where title = " + title
+	meetingDeleteByTitle := "delete from meetings where title = '" + title + "';"
 	_, err := dao.Exec(meetingDeleteByTitle)
 	if err != nil {
 		return err
@@ -88,7 +82,7 @@ func (dao *meetingDao)DeleteByTitle(title string) error {
 }
 
 func (dao *meetingDao)DeleteBySponsor(sponsor string) error {
-	meetingDeleteBySponsor := "delete from meetings where sponsor = " + sponsor
+	meetingDeleteBySponsor := "delete from meetings where sponsor = '" + sponsor + "';"
 	_, err := dao.Exec(meetingDeleteBySponsor)
 	if err != nil {
 		return err
