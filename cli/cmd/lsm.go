@@ -32,6 +32,7 @@ var lsmCmd = &cobra.Command{
 		} else {
 			defer res.Body.Close()
 			body, err := ioutil.ReadAll(res.Body)
+			tools.Report(err)
 			fmt.Println(string(body))
 		}
 		
