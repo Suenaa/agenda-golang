@@ -20,7 +20,7 @@ var delCmd = &cobra.Command{
 		if password == "" {
 			tools.Report(errors.New("password required"))
 		}
-		req, err := http.NewRequest(http.MethodDelete,host+"/users/deleteuser", nil)
+		req, err := http.NewRequest(http.MethodDelete,host+"/users/deleteuser?password="+password, nil)
 		tools.Report(err)
 		client := &http.Client{}
 		res, err1 := client.Do(req)
@@ -29,7 +29,8 @@ var delCmd = &cobra.Command{
 			logs.EventLog("delete a user")
 			defer res.Body.Close()
 		} else {
-			tools.Report(err)
+			fmt.Println("no Success")
+			tools.Report(err1)
 		}
 	},
 }

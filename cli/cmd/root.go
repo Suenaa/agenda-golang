@@ -9,7 +9,7 @@ import (
 )
 
 var cfgFile string
-const host string = "https://localhost"
+const host string = "http://localhost:8080"
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{

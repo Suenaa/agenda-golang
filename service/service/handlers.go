@@ -29,6 +29,7 @@ func userLoginHandler(formatter *render.Render) http.HandlerFunc {
 func createNewUserHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		req.ParseForm()
 		decoder := json.NewDecoder(req.Body)
 		var user entities.User
 		err := decoder.Decode(&user)
@@ -58,6 +59,7 @@ func listAllUsersHandler(formatter *render.Render) http.HandlerFunc {
 func deleteCurrentUserHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		req.ParseForm()
 		err := DeleteUser(req.FormValue("password"))
 		check(err)
 		if err == nil {
@@ -72,6 +74,7 @@ func deleteCurrentUserHandler(formatter *render.Render) http.HandlerFunc {
 func listAllMeetingsHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		req.ParseForm()
 		meetingList, err := QueryMeeting(req.FormValue("startdate"), req.FormValue("enddate"))
 		check(err)
 		if err == nil {
@@ -86,6 +89,7 @@ func listAllMeetingsHandler(formatter *render.Render) http.HandlerFunc {
 func createNewMeetingHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		req.ParseForm()
 		decoder := json.NewDecoder(req.Body)
 		var meeting entities.Meeting
 		err := decoder.Decode(&meeting)
