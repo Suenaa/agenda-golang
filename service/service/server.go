@@ -1,8 +1,6 @@
 package service
 
 import (
-	"net/http"
-
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 	"github.com/urfave/negroni"
