@@ -38,9 +38,9 @@ func TestListAllUsers(t *testing.T) {
 func TestCreateNewMeeting(t *testing.T) {
 	fmt.Println("------TEST of Creating a new meeting------")
 	cmCmd.Flags().Set("title", "testMeeting")
-	cmCmd.Flags().Set("members", "testUser0,testUser1")
-	cmCmd.Flags().Set("starttime", "2017/12/25/13:00")
-	cmCmd.Flags().Set("endtime", "2017/12/25/17:00")
+	cmCmd.Flags().Set("participant", "testUser0,testUser1")
+	cmCmd.Flags().Set("start", "2017-10-20T19:00")
+	cmCmd.Flags().Set("end", "22017-10-20T20:00")
 	cmCmd.Run(cmCmd, nil)
 }
 
