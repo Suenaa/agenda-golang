@@ -34,7 +34,6 @@ var cmCmd = &cobra.Command{
 		if end == "" {
 			tools.Report(errors.New("end required"))
 		}
-		err := service.CreateMeeting(title, start, end, participants)
 		data := struct {
 			Title     string   `json:"title"`
 			Participators   []string `json:"members"`
