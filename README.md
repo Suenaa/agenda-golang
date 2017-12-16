@@ -47,7 +47,7 @@ go get github.com/Suenaa/agenda-golang
 
 - run server
 ```
-cd serverce
+cd service
 go run main.go
 ```
 
