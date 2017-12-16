@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/Suenaa/agenda-golang.svg?branch=master)](https://travis-ci.org/Suenaa/agenda-golang)
 
 # 使用说明
-***agd command***
+**agd command**
 
 - regist       
 　　`agd regist -u usernaeme -p password -e e-mail -t telephone`     
@@ -39,7 +39,7 @@
 　　`agd clear`
 
 
-***使用命令行***
+**使用命令行**
 - go get
 ```
 go get github.com/Suenaa/agenda-golang
@@ -58,7 +58,7 @@ go build agd.go
 ```
 
 
-***使用镜像***
+**使用镜像**
 - pull from docker hub
 ```
 ```
