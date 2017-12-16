@@ -10,7 +10,7 @@ func TestRegister(t *testing.T) {
 	registCmd.Flags().Set("username", "user")
 	registCmd.Flags().Set("password", "123")
 	registCmd.Flags().Set("email", "111@mail.com")
-	registCmd.Flags().Set("phone", "12345678901")
+	registCmd.Flags().Set("telephone", "12345678901")
 	registCmd.Run(registCmd, nil)
 }
 
