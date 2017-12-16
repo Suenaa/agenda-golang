@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"errors"
+	"bytes"
+	"encoding/json"
+	"net/http"
 	"fmt"
 	"github.com/spf13/cobra"
 
-	"github.com/Suenaa/agenda-golang/service/service"
 	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/Suenaa/agenda-golang/service/logs"
 )
@@ -33,6 +35,17 @@ var cmCmd = &cobra.Command{
 			tools.Report(errors.New("end required"))
 		}
 		err := service.CreateMeeting(title, start, end, participants)
+		data := struct {
+			Title     string   `json:"title"`
+			Participators   []string `json:"members"`
+			Start string   `json:"starttime"`
+			End   string   `json:"endtime"`
+		}{title, participants, start, end}
+		buf, err := json.Marshal(data)
+		tools.Report(err)
+		res, err := http.Post(host+"/meetings/newmeeting",
+			"application/json", bytes.NewBuffer(buf))
+		defer res.Body.Close()
 		if err == nil {
 			fmt.Println("Success")
 			logs.EventLog("create a meeting: " + title)

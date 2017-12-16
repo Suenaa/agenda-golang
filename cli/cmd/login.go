@@ -3,8 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"net/http"
 
-	"github.com/Suenaa/agenda-golang/service/service"
 	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/spf13/cobra"
 	"github.com/Suenaa/agenda-golang/service/logs"
@@ -24,9 +24,12 @@ var loginCmd = &cobra.Command{
 		if password == "" {
 			tools.Report(errors.New("password required"))
 		}
-		if err := service.UserLogin(username, password); err == nil {
+		res, err := http.Get(host + "/user/login?username=" +
+			username + "&password=" + password)	
+		if err == nil {
 			fmt.Println("Success")
 			logs.EventLog(username + " log in")
+			defer res.Body.Close()
 		} else {
 			tools.Report(err)
 		}

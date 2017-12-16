@@ -5,15 +5,23 @@ import (
 	"net/http"
 
 	"github.com/unrolled/render"
+	"github.com/Suenaa/agenda-golang/service/entities"
 )
 
 func userLoginHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello getUserKeyHandler"})
+		req.ParseForm()
+		err := UserLogin(req.FormValue("username"),req.FormValue("password"))
+		check(err)
+		if err == nil {
+			formatter.JSON(w, http.StatusOK, struct {
+			Name      string `json:"name"`
+			Status string `json:"status"`
+			}{Name: req.FormValue("username"), Status: "Is login"})
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
 	}
 
 }
@@ -21,10 +29,16 @@ func userLoginHandler(formatter *render.Render) http.HandlerFunc {
 func createNewUserHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello createNewUserHandler"})
+		decoder := json.NewDecoder(req.Body)
+		var user entities.User
+		err := decoder.Decode(&user)
+		check(err)
+		err = UserRegister(user.Username, user.Password, user.Email, user.Phone)
+		if err == nil {
+			formatter.JSON(w, http.StatusCreated, user)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
 	}
 
 }
@@ -32,10 +46,11 @@ func createNewUserHandler(formatter *render.Render) http.HandlerFunc {
 func listAllUsersHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello listAllUsersHandler"})
+		userList := QueryAllUsers()
+		for i := range userList {
+			userList[i].Password = "******"
+		}
+		formatter.JSON(w, http.StatusOK, userList)
 	}
 
 }
@@ -43,10 +58,13 @@ func listAllUsersHandler(formatter *render.Render) http.HandlerFunc {
 func deleteCurrentUserHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello deleteCurrentUserHandler"})
+		err := DeleteUser(req.FormValue("password"))
+		check(err)
+		if err == nil {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
 	}
 
 }
@@ -54,10 +72,13 @@ func deleteCurrentUserHandler(formatter *render.Render) http.HandlerFunc {
 func listAllMeetingsHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello listAllMeetingsHandler"})
+		meetingList, err := QueryMeeting(req.FormValue("startdate"), req.FormValue("enddate"))
+		check(err)
+		if err == nil {
+			formatter.JSON(w, http.StatusOK, meetingList)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
 	}
 
 }
@@ -65,10 +86,17 @@ func listAllMeetingsHandler(formatter *render.Render) http.HandlerFunc {
 func createNewMeetingHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello createNewMeetingHandler"})
+		decoder := json.NewDecoder(req.Body)
+		var meeting entities.Meeting
+		err := decoder.Decode(&meeting)
+		check(err)
+		err = CreateMeeting(meeting.Title, meeting.Start, meeting.End, meeting.Participators)
+		check(err)
+		if err == nil {
+			formatter.JSON(w, http.StatusOK, meeting)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
 	}
 
 }
@@ -76,10 +104,19 @@ func createNewMeetingHandler(formatter *render.Render) http.HandlerFunc {
 func clearMeetingsHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			ID      string `json:"id"`
-			Content string `json:"content"`
-		}{ID: "8675309", Content: "Hello clearMeetingsHandler"})
+		err := DeleteAllMeeting()
+		check(err)
+		if err == nil {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
 	}
 
+}
+
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
