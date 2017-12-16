@@ -1,10 +1,12 @@
 package cmd
 
 import (
-	"errors"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"errors"
 
-	"github.com/Suenaa/agenda-golang/service/service"
 	"github.com/Suenaa/agenda-golang/service/tools"
 	"github.com/spf13/cobra"
 	"github.com/Suenaa/agenda-golang/service/logs"
@@ -32,11 +34,20 @@ var registCmd = &cobra.Command{
 		if phone == "" {
 			tools.Report(errors.New("phone required"))
 		}
-		err := service.UserRegister(username, password, email, phone)
+		data := struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+			Email    string `json:"email"`
+			Phone    string `json:"phone"`
+		}{username, password, email, phone}
+		buf, err := json.Marshal(data)
+		tools.Report(err)
+		res, err := http.Post(host+"/user/register",
+			"application/json", bytes.NewBuffer(buf))
 		if err == nil {
 			fmt.Println("Success")
 			logs.EventLog(username + " regists")
-
+			defer res.Body.Close()
 		} else {
 			tools.Report(err)
 		}
