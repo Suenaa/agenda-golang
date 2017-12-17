@@ -1,16 +1,7 @@
 FROM golang:1.8
-
-COPY . /go/src/github.com/Suenaa/agenda-golang
-WORKDIR /go/src/github.com/Suenaa/agenda-golang/cli
-
-RUN go-wrapper download
-RUN go build -o /go/bin/agendalocal .
-
-WORKDIR /go/src/github.com/Suenaa/agenda-golang/service
-
-RUN go-wrapper download
-RUN go build -o /go/bin/agendaserver .
-
-CMD ["agendaserver"]
-
+COPY . "$GOPATH/src/github.com/Suenaa/agenda-golang"
+RUN cd "$GOPATH/src/github.com/Suenaa/agenda-golang/cli" && go get -v && go install -v
+RUN cd "$GOPATH/src/github.com/Suenaa/agenda-golang/service" && go get -v && go install -v
+WORKDIR /
 EXPOSE 8080
+VOLUME [ "/data" ]
