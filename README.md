@@ -53,6 +53,7 @@ go run main.go
 
 - use cli
 ```
+cd cli
 go build agd.go
 ./agd [command]
 ```
@@ -92,7 +93,7 @@ ae60d43ef433e7a7f8917b27b0fdaf45dbb7443cf141b663bb89a4427cb8d441
 ```
 - use cli
 ```
-sudo docker run --rm --net host -v $HOME/Desktop/client:/data suenaa/agenda-golang cli
+$ sudo docker run --rm --net host -v $HOME/Desktop/client:/data suenaa/agenda-golang cli
 A tool for managing meetings
 
 Usage:
