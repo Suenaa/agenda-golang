@@ -1,7 +1,7 @@
 # agenda-golang
 [![Build Status](https://travis-ci.org/Suenaa/agenda-golang.svg?branch=master)](https://travis-ci.org/Suenaa/agenda-golang)
 
-An online service for managing meetings.
+An online service for managing meetings.                                               
 Click [agenda](https://agendagolang.docs.apiary.io/) can find API design.
 
 # 使用说明
